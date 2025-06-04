@@ -1,2 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700;800&family=Roboto:wght@400;500&display=swap');
 @import "tailwindcss";
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #001328 inset !important; /* Use your input bg color */
+  -webkit-text-fill-color: #ffffff !important;                  /* Use your input text color */
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #fff;
+}

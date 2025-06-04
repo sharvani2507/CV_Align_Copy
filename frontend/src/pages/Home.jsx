@@ -1,8 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import Navbar from "../components/Navbar";
 import FeatureCard from "../components/FeatureCard";
 import Button from "../components/Button";
 
 function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gradient-to-b from-[#041C32] to-[#04293A] min-h-screen text-white">
       <Navbar />
@@ -16,13 +19,17 @@ function Home() {
 
         <div className="flex flex-col md:flex-row justify-center gap-8 mt-12">
           <FeatureCard title="FEATURE 1" hoverType="color" />
-          <FeatureCard title="FEATURE 2" hoverType="opacity" />
+          <div className="mt-16 md:mt-8">
+            <FeatureCard title="FEATURE 2" hoverType="opacity" />
+          </div>
           <FeatureCard title="FEATURE 3" hoverType="opacity" />
         </div>
 
         <div className="flex flex-wrap justify-center gap-4 mt-12">
-          <Button text="GET STARTED" filled />
-          <Button text="REGISTER COMPANY" outlined />
+          <Button text="GET STARTED" outlined />
+          <div onClick={() => navigate('/register-company')}>
+            <Button text="REGISTER COMPANY" outlined />
+          </div>
           <Button text="CONTACT US" outlined />
         </div>
       </div>
