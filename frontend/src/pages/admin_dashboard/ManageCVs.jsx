@@ -1,62 +1,25 @@
 import React, { useState, useMemo } from 'react';
 import DashboardNavbar from '../../components/DashboardNavbar';
-
-const CVFilters = ({ onFilterChange }) => {
-  return (
-    <div className="grid grid-cols-3 gap-6">
-      <div>
-        <label className="block text-[#01295B] mb-2">Recruiter Name</label>
-        <input
-          type="text"
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
-          onChange={(e) => onFilterChange('recruiter', e.target.value)}
-          placeholder="Search by recruiter..."
-        />
-      </div>
-      <div>
-        <label className="block text-[#01295B] mb-2">Score</label>
-        <select
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
-          onChange={(e) => onFilterChange('score', e.target.value)}
-        >
-          <option value="">All Scores</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-      <div>
-        <label className="block text-[#01295B] mb-2">Status</label>
-        <select
-          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
-          onChange={(e) => onFilterChange('status', e.target.value)}
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="deleted">Deleted</option>
-        </select>
-      </div>
-    </div>
-  );
-};
+import CVFilters from '../../components/CVFilters';
 
 const ManageCVs = () => {
   const [cvData, setCvData] = useState([
-    { id: 1, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter A', score: 'XYZ', status: 'active' },
-    { id: 2, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter B', score: 'XYZ', status: 'active' },
-    { id: 3, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter C', score: 'XYZ', status: 'active' },
-    { id: 4, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter D', score: 'XYZ', status: 'active' },
-    { id: 5, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter E', score: 'XYZ', status: 'active' },
-    { id: 6, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter F', score: 'XYZ', status: 'active' },
-    { id: 7, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter G', score: 'XYZ', status: 'active' },
-    { id: 8, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
-    { id: 9, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
-    { id: 10, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
+    { id: 1, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter A', score: 95, status: 'active' },
+    { id: 2, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter B', score: 75, status: 'active' },
+    { id: 3, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter C', score: 25, status: 'active' },
+    { id: 4, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter D', score: 88, status: 'active' },
+    { id: 5, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter E', score: 65, status: 'active' },
+    { id: 6, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter F', score: 92, status: 'active' },
+    { id: 7, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter G', score: 45, status: 'active' },
+    { id: 8, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 78, status: 'active' },
+    { id: 9, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 91, status: 'active' },
+    { id: 10, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 28, status: 'active' },
   ]);
 
   const [filters, setFilters] = useState({
     recruiter: '',
-    score: '',
+    fileName: '',
+    scoreRange: '',
     status: ''
   });
 
@@ -70,6 +33,20 @@ const ManageCVs = () => {
       ...prev,
       [filterName]: value
     }));
+  };
+
+  const isScoreInRange = (score, range) => {
+    if (!range) return true;
+    const [min, max] = range.split('-').map(Number);
+    return score >= min && score <= max;
+  };
+
+  const getScoreColor = (score) => {
+    if (score >= 90) return 'text-green-700';
+    if (score >= 70) return 'text-blue-700';
+    if (score >= 50) return 'text-yellow-700';
+    if (score >= 30) return 'text-orange-700';
+    return 'text-red-700';
   };
 
   const handleSort = (key) => {
@@ -120,10 +97,11 @@ const ManageCVs = () => {
   const filteredCVs = useMemo(() => {
     let filtered = cvData.filter(cv => {
       const recruiterMatch = cv.uploadedBy.toLowerCase().includes(filters.recruiter.toLowerCase()) || !filters.recruiter;
-      const scoreMatch = cv.score === filters.score || !filters.score;
+      const fileNameMatch = cv.fileName.toLowerCase().includes(filters.fileName.toLowerCase()) || !filters.fileName;
+      const scoreMatch = isScoreInRange(cv.score, filters.scoreRange);
       const statusMatch = cv.status === filters.status || !filters.status;
 
-      return recruiterMatch && scoreMatch && statusMatch;
+      return recruiterMatch && fileNameMatch && scoreMatch && statusMatch;
     });
 
     if (sortConfig.key) {
@@ -195,16 +173,18 @@ const ManageCVs = () => {
                   >
                     <td className="py-3 px-4 text-[#01295B]">{index + 1}</td>
                     <td className="py-3 px-4">
-                      <a href="#" className="text-[#008B8B] hover:underline font-medium">
+                      <a href="#" className="text-[#01295B] hover:underline font-medium">
                         {cv.fileName}
                       </a>
                     </td>
                     <td className="py-3 px-4 text-[#01295B]">{cv.uploadedBy}</td>
-                    <td className="py-3 px-4 text-[#01295B]">{cv.score}</td>
+                    <td className={`py-3 px-4 font-medium ${getScoreColor(cv.score)}`}>
+                      {cv.score}%
+                    </td>
                     <td className="py-3 px-4">
                       <button
                         onClick={() => handleViewFeedback(cv.id)}
-                        className="text-[#008B8B] hover:underline font-medium"
+                        className="text-[#01295B] hover:underline font-medium"
                       >
                         View Feedback
                       </button>

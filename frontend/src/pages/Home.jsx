@@ -30,7 +30,9 @@ function Home() {
           <div onClick={() => navigate('/register-company')}>
             <Button text="REGISTER COMPANY" outlined />
           </div>
-          <Button text="CONTACT US" outlined />
+          <div onClick={() => navigate('/contact-us')}>
+            <Button text="CONTACT US" outlined />
+          </div>
         </div>
       </div>
     </div>

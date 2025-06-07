@@ -23,13 +23,8 @@ function RegisterCompany() {
     const newErrors = {};
     if (!companyName.trim()) newErrors.companyName = "This field cannot be empty";
     if (!description.trim()) newErrors.description = "This field cannot be empty";
-    if (!companyWebsite.trim()) {
-      newErrors.companyWebsite = "Please enter company website";
-      setShowUrlPopup(true);
-      setTimeout(() => setShowUrlPopup(false), 3000); // Hide popup after 3 seconds
-    } else if (!validateUrl(companyWebsite)) {
-      newErrors.companyWebsite = "Please enter a valid URL (e.g., https://example.com)";
-      setShowUrlPopup(true);
+    if (!validateUrl(companyWebsite)) {
+      newErrors.companyWebsite = "Please enter a valid URL ";
       setTimeout(() => setShowUrlPopup(false), 3000);
     }
     setErrors(newErrors);
