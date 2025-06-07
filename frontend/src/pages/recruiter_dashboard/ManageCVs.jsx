@@ -1,26 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import DashboardNavbar from '../../components/AdminNavbar';
+import RecruiterNavbar from '../../components/RecruiterNavbar';
 import CVFilters from '../../components/CVFilters';
 
 const ManageCVs = () => {
   const [cvData, setCvData] = useState([
-    { id: 1, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter A', score: 95, status: 'active' },
-    { id: 2, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter B', score: 75, status: 'active' },
-    { id: 3, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter C', score: 25, status: 'active' },
-    { id: 4, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter D', score: 88, status: 'active' },
-    { id: 5, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter E', score: 65, status: 'active' },
-    { id: 6, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter F', score: 92, status: 'active' },
-    { id: 7, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter G', score: 45, status: 'active' },
-    { id: 8, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 78, status: 'active' },
-    { id: 9, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 91, status: 'active' },
-    { id: 10, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 28, status: 'active' },
+    { id: 1, fileName: 'cv_resume.pdf', position: 'Software Engineer', score: 95 },
+    { id: 2, fileName: 'cv_resume.pdf', position: 'Product Manager', score: 75 },
+    { id: 3, fileName: 'cv_resume.pdf', position: 'UX Designer', score: 25 },
+    { id: 4, fileName: 'cv_resume.pdf', position: 'Data Scientist', score: 88 },
+    { id: 5, fileName: 'cv_resume.pdf', position: 'DevOps Engineer', score: 65 },
   ]);
 
   const [filters, setFilters] = useState({
-    recruiter: '',
+    position: '',
     fileName: '',
-    scoreRange: '',
-    status: ''
+    scoreRange: ''
   });
 
   const [sortConfig, setSortConfig] = useState({
@@ -69,23 +63,9 @@ const ManageCVs = () => {
   const handleDelete = async (id) => {
     try {
       // TODO: Add API call to delete CV
-      // const response = await fetch(`/api/cvs/${id}`, {
-      //   method: 'DELETE',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //     // Add any necessary authentication headers
-      //   }
-      // });
-      
-      // if (response.ok) {
-      //   setCvData(prevData => prevData.filter(cv => cv.id !== id));
-      // }
-
-      // For now, just update the UI
       setCvData(prevData => prevData.filter(cv => cv.id !== id));
     } catch (error) {
       console.error('Error deleting CV:', error);
-      // Handle error (show notification, etc.)
     }
   };
 
@@ -96,12 +76,11 @@ const ManageCVs = () => {
 
   const filteredCVs = useMemo(() => {
     let filtered = cvData.filter(cv => {
-      const recruiterMatch = cv.uploadedBy.toLowerCase().includes(filters.recruiter.toLowerCase()) || !filters.recruiter;
+      const positionMatch = cv.position.toLowerCase().includes(filters.position.toLowerCase()) || !filters.position;
       const fileNameMatch = cv.fileName.toLowerCase().includes(filters.fileName.toLowerCase()) || !filters.fileName;
       const scoreMatch = isScoreInRange(cv.score, filters.scoreRange);
-      const statusMatch = cv.status === filters.status || !filters.status;
 
-      return recruiterMatch && fileNameMatch && scoreMatch && statusMatch;
+      return positionMatch && fileNameMatch && scoreMatch;
     });
 
     if (sortConfig.key) {
@@ -126,7 +105,7 @@ const ManageCVs = () => {
   const columns = [
     { key: 'id', label: 'S.No.', sortable: true },
     { key: 'fileName', label: 'CVs', sortable: true },
-    { key: 'uploadedBy', label: 'Uploaded By', sortable: true },
+    { key: 'position', label: 'Position', sortable: true },
     { key: 'score', label: 'Score', sortable: true },
     { key: 'feedback', label: 'Generated Feedback', sortable: false },
     { key: 'actions', label: '', sortable: false }
@@ -134,7 +113,7 @@ const ManageCVs = () => {
 
   return (
     <div className="min-h-screen bg-[#001F3F]">
-      <DashboardNavbar />
+      <RecruiterNavbar />
       
       <div className="px-36 py-6">
         <h1 className="text-4xl font-bold text-white mb-8">Manage CVs</h1>
@@ -177,7 +156,7 @@ const ManageCVs = () => {
                         {cv.fileName}
                       </a>
                     </td>
-                    <td className="py-3 px-4 text-[#01295B]">{cv.uploadedBy}</td>
+                    <td className="py-3 px-4 text-[#01295B]">{cv.position}</td>
                     <td className={`py-3 px-4 font-medium ${getScoreColor(cv.score)}`}>
                       {cv.score}%
                     </td>
@@ -190,12 +169,14 @@ const ManageCVs = () => {
                       </button>
                     </td>
                     <td className="py-3 px-4">
+                      <div className="flex items-center space-x-3">
                       <button
                         onClick={() => handleDelete(cv.id)}
                         className="px-4 py-1 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition-colors"
                       >
                         Delete
                       </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -208,4 +189,4 @@ const ManageCVs = () => {
   );
 };
 
-export default ManageCVs;
+export default ManageCVs; 

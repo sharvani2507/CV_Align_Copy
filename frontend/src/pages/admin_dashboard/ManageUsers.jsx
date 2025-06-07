@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import UserFilters from '../../components/UserFilters';
-import DashboardNavbar from '../../components/DashboardNavbar';
+import DashboardNavbar from '../../components/AdminNavbar';
 
 function ManageUsers() {
   // Mock data - replace with actual API data later

@@ -30,7 +30,7 @@ const ContactUs = () => {
               <label className="block text-white text-xl font-semibold mb-4">NAME</label>
               <input
                 type="text"
-                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-white text-lg focus:outline-none"
+                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-[#01295B] font-semibold text-lg focus:outline-none"
                 required
               />
             </div>
@@ -39,7 +39,7 @@ const ContactUs = () => {
               <label className="block text-white text-xl font-semibold mb-4">E-MAIL</label>
               <input
                 type="email"
-                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-white text-lg focus:outline-none"
+                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-[#01295B] font-semibold text-lg focus:outline-none"
                 required
               />
             </div>
@@ -48,7 +48,7 @@ const ContactUs = () => {
               <label className="block text-white text-xl font-semibold mb-4">COMPANY</label>
               <input
                 type="text"
-                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-white text-lg focus:outline-none"
+                className="w-full h-14 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 text-[#01295B] font-semibold text-lg focus:outline-none"
                 required
               />
             </div>
@@ -56,7 +56,7 @@ const ContactUs = () => {
             <div>
               <label className="block text-white text-xl font-semibold mb-4">MESSAGE</label>
               <textarea
-                className="w-full h-48 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 py-4 text-white text-lg focus:outline-none resize-none"
+                className="w-full h-48 bg-[#B4D4D9] bg-opacity-40 rounded-lg px-6 py-4 text-[#01295B] font-semibold text-lg focus:outline-none resize-none"
                 required
               />
             </div>

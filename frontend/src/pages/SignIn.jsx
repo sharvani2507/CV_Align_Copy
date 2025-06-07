@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -31,9 +33,14 @@ const SignIn = () => {
       {/* Right Section */}
       <div className="w-1/2 flex flex-col justify-center px-28 relative h-full py-8">
         {/* Logo and Square */}
-        <div className=" px-36 absolute top-6 right-8 flex items-center gap-2">
-          <Link to="/" className="text-white text-2xl">CV ALIGN</Link>
-          <div className="w-[35px] h-[35px] bg-white rounded" />
+        <div 
+        className="cursor-pointer" 
+        onClick={() => navigate('/')}>
+          <div className="px-36 absolute top-6 right-8 flex items-center gap-2">
+            <div className="w-10 h-10 bg-[#A2E8DD] rounded-lg flex items-center justify-center">
+              <span className="text-[#001F3F] font-bold text-xl">CV</span>
+            </div>
+          </div>
         </div>
 
         {/* Form */}

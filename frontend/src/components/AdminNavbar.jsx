@@ -24,9 +24,9 @@ function DashboardNavbar() {
       {/* Navigation Links */}
       <div className="flex items-center space-x-6">
         <button 
-          onClick={() => navigate('/dashboard')} 
+          onClick={() => navigate('/admin/dashboard')} 
           className={`${
-            isActive('/dashboard')
+            isActive('/admin/dashboard')
               ? 'bg-[#A2E8DD] text-[#001F3F]'
               : 'border-2 border-[#A2E8DD] text-[#A2E8DD] hover:bg-[#A2E8DD] hover:text-[#001F3F]'
           } px-6 py-2 rounded-[15px] font-semibold transition-all`}
@@ -40,7 +40,7 @@ function DashboardNavbar() {
             onClick={() => setIsManageOpen(!isManageOpen)}
             onBlur={() => setTimeout(() => setIsManageOpen(false), 200)}
             className={`${
-              isActive('/manage/users') || isActive('/manage/cvs')
+              isActive('/admin/manage/users') || isActive('/admin/manage/cvs')
                 ? 'bg-[#A2E8DD] text-[#001F3F]'
                 : 'border-2 border-[#A2E8DD] text-[#A2E8DD] hover:bg-[#A2E8DD] hover:text-[#001F3F]'
             } px-6 py-2 rounded-[15px] transition-all flex items-center space-x-2`}
@@ -61,11 +61,11 @@ function DashboardNavbar() {
             <div className="absolute right-0 mt-2 w-48 bg-[#001F3F] border border-[#A2E8DD] rounded-[15px] shadow-lg py-2 z-50">
               <button
                 onClick={() => {
-                  navigate('/manage/users');
+                  navigate('/admin/manage/users');
                   setIsManageOpen(false);
                 }}
                 className={`block w-full text-left px-6 py-2 ${
-                  isActive('/manage/users')
+                  isActive('/admin/manage/users')
                     ? 'bg-[#A2E8DD] text-[#001F3F]'
                     : 'text-[#A2E8DD] hover:bg-[#A2E8DD] hover:text-[#001F3F]'
                 } transition-all`}
@@ -74,11 +74,11 @@ function DashboardNavbar() {
               </button>
               <button
                 onClick={() => {
-                  navigate('/manage/cvs');
+                  navigate('/admin/manage/cvs');
                   setIsManageOpen(false);
                 }}
                 className={`block w-full text-left px-6 py-2 ${
-                  isActive('/manage/cvs')
+                  isActive('/admin/manage/cvs')
                     ? 'bg-[#A2E8DD] text-[#001F3F]'
                     : 'text-[#A2E8DD] hover:bg-[#A2E8DD] hover:text-[#001F3F]'
                 } transition-all`}
@@ -92,7 +92,7 @@ function DashboardNavbar() {
         {/* Sign Out Button */}
         <button 
           onClick={() => navigate('/')} 
-          className="border-2 border-[#A2E8DD] text-[#A2E8DD] px-6 py-2 rounded-[15px] hover:bg-[#A2E8DD] hover:text-[#001F3F] transition-all"
+          className="border-2 border-red-600 text-red-600 px-6 py-2 rounded-[15px] hover:bg-red-600 hover:text-white transition-all"
         >
           SIGN OUT
         </button>
