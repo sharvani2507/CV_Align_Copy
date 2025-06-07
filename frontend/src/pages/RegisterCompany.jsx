@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function RegisterCompany() {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ function RegisterCompany() {
   const [description, setDescription] = useState("");
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [errors, setErrors] = useState({});
-  const [showUrlPopup, setShowUrlPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateUrl = (url) => {
     try {
@@ -25,21 +26,32 @@ function RegisterCompany() {
     if (!description.trim()) newErrors.description = "This field cannot be empty";
     if (!validateUrl(companyWebsite)) {
       newErrors.companyWebsite = "Please enter a valid URL ";
-      setTimeout(() => setShowUrlPopup(false), 3000);
     }
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      setIsLoading(true);
       try {
-        // Here you would typically make an API call to register the company
-        // For now, we'll simulate it with a mock company code
-        const mockCompanyCode = "12 dfvib"; // This should come from your API
+        const response = await axios.post('http://localhost:8000/company/register', {
+          name: companyName.trim(),
+          description: description.trim(),
+          website: companyWebsite.trim()
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: false
+        });
         
-        // Navigate to the company code page with the code
-        navigate('/company-code', { state: { companyCode: mockCompanyCode } });
+        // Navigate to the company code page with the code from the response
+        navigate('/company-code', { state: { companyCode: response.data.code } });
       } catch (error) {
         console.error('Error registering company:', error);
-        // Handle error appropriately
+        setErrors({
+          submit: error.response?.data?.detail || 'Failed to register company. Please try again.'
+        });
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -99,20 +111,17 @@ function RegisterCompany() {
             </div>
             <button 
               type="submit"
-              className="w-full h-[60px] bg-[#A2E8DD] text-[#000913] font-medium text-lg rounded-[15px] hover:bg-opacity-90 transition-all mt-12"
+              disabled={isLoading}
+              className="w-full h-[60px] bg-[#A2E8DD] text-[#000913] font-medium text-lg rounded-[15px] hover:bg-opacity-90 transition-all mt-12 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              CREATE COMPANY CODE
+              {isLoading ? "CREATING..." : "CREATE COMPANY CODE"}
             </button>
+            {errors.submit && (
+              <p className="text-[#FFAB00] text-sm mt-2 text-center">{errors.submit}</p>
+            )}
           </form>
         </div>
       </div>
-
-      {/* URL Popup */}
-      {showUrlPopup && (
-        <div className="fixed top-4 right-4 bg-[#FFAB00] text-white px-6 py-4 rounded-lg shadow-lg transition-opacity duration-300 z-50">
-          <p className="font-medium">{errors.companyWebsite}</p>
-        </div>
-      )}
     </div>
   );
 }

@@ -3,10 +3,8 @@ uvicorn[standard]
 python-multipart
 pydantic
 email-validator
-sqlalchemy
-psycopg2-binary
-alembic
-passlib[bcrypt]
+pymongo
+motor
 python-jose
 cloudinary
 python-dotenv
