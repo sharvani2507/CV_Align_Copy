@@ -31,11 +31,11 @@ const SignUp = () => {
       </div>
 
       {/* Right Section */}
-      <div className="w-1/2 flex flex-col justify-center px-16 relative h-full py-8">
+      <div className="w-1/2 flex flex-col justify-center px-28 relative h-full py-8">
         {/* Logo and Square */}
-        <div className="absolute top-6 right-8 flex items-center gap-2">
-        <Link to="/" className="text-white text-xl">CV ALIGN</Link>
-          <div className="w-[30px] h-[30px] bg-white rounded" />
+        <div className="absolute top-6 right-8 px-36 flex items-center gap-2">
+        <Link to="/" className="text-white text-2xl">CV ALIGN</Link>
+          <div className="w-[35px] h-[35px] bg-white rounded" />
         </div>
 
         {/* Form */}

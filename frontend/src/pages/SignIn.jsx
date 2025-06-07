@@ -25,15 +25,15 @@ const SignIn = () => {
     <div className="h-screen flex bg-gradient-to-br from-[#000B18] to-[#001F3F] overflow-hidden">
       {/* Left Section */}
       <div className="w-1/2 flex items-center justify-center">
-        <div className="w-full max-w-[420px] h-[480px] bg-[#BFC8C8] rounded-[30px]" />
+        <div className="w-full max-w-[420px] h-[420px] bg-[#BFC8C8] rounded-[30px]" />
       </div>
 
       {/* Right Section */}
-      <div className="w-1/2 flex flex-col justify-center px-16 relative h-full py-8">
+      <div className="w-1/2 flex flex-col justify-center px-28 relative h-full py-8">
         {/* Logo and Square */}
-        <div className="absolute top-6 right-8 flex items-center gap-2">
-          <Link to="/" className="text-white text-xl">CV ALIGN</Link>
-          <div className="w-[30px] h-[30px] bg-white rounded" />
+        <div className=" px-36 absolute top-6 right-8 flex items-center gap-2">
+          <Link to="/" className="text-white text-2xl">CV ALIGN</Link>
+          <div className="w-[35px] h-[35px] bg-white rounded" />
         </div>
 
         {/* Form */}

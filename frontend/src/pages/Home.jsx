@@ -10,14 +10,14 @@ function Home() {
     <div className="bg-gradient-to-b from-[#041C32] to-[#04293A] min-h-screen text-white">
       <Navbar />
 
-      <div className="text-center py-20 px-6">
+      <div className="text-center py-6 px-36">
         <h1 className="text-5xl font-bold">CV ALIGN</h1>
         <p className="text-teal-300 text-xl mt-4">tagline - one liner on the company</p>
         <p className="text-gray-300 max-w-3xl mx-auto mt-2 leading-relaxed">
-          Some descriptionSome descriptionSome descriptionSome descriptionSome descriptionSome descriptionSome descriptionSome description
+           descriptionSome descriptionSome description
         </p>
 
-        <div className="flex flex-col md:flex-row justify-center gap-8 mt-12">
+        <div className="flex flex-col md:flex-row justify-center gap-8 mt-8">
           <FeatureCard title="FEATURE 1" hoverType="color" />
           <div className="mt-16 md:mt-8">
             <FeatureCard title="FEATURE 2" hoverType="opacity" />
@@ -25,7 +25,7 @@ function Home() {
           <FeatureCard title="FEATURE 3" hoverType="opacity" />
         </div>
 
-        <div className="flex flex-wrap justify-center gap-4 mt-12">
+        <div className="flex flex-wrap justify-center gap-4 mt-8">
           <Button text="GET STARTED" outlined />
           <div onClick={() => navigate('/register-company')}>
             <Button text="REGISTER COMPANY" outlined />

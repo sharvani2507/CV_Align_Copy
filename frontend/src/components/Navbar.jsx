@@ -4,7 +4,7 @@ function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <nav className="flex justify-between items-center px-8 py-4 bg-[#00000080]">
+    <nav className="flex justify-between items-center px-36 py-4 bg-[#00000080]">
       <div className="w-10 h-10 bg-[#A2E8DD] cursor-pointer" onClick={() => navigate('/')} />
       <div className="space-x-6 text-white">
         <button onClick={() => navigate('/')} className="bg-[#A2E8DD] text-[#001F3F] px-6 py-2 rounded-[15px] font-semibold hover:bg-opacity-90 transition-all">HOME</button>
