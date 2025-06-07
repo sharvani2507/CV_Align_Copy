@@ -5,6 +5,8 @@ import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import AdminDashboard from './pages/dashboard/AdminDashboard';
 import ManageUsers from './pages/dashboard/ManageUsers';
+import ManageCVs from './pages/dashboard/ManageCVs';
+import CompanyCode from './pages/CompanyCode';
 
 function App() {
   return (
@@ -15,11 +17,12 @@ function App() {
           <Route path="/register-company" element={<RegisterCompany />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/company-code" element={<CompanyCode />} />
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<AdminDashboard />} />
           <Route path="/manage/users" element={<ManageUsers />} />
-          <Route path="/manage/cvs" element={<AdminDashboard />} />
+          <Route path="/manage/cvs" element={<ManageCVs />} />
         </Routes>
       </div>
     </Router>

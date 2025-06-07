@@ -137,7 +137,7 @@ function ManageUsers() {
     <div className="min-h-screen bg-[#001F3F]">
       <DashboardNavbar />
       
-      <div className="px-24 py-8">
+      <div className="px-36 py-8">
         <h1 className="text-4xl font-bold text-white mb-8">Manage Users</h1>
 
         <div className="bg-gray-300/80 rounded-lg p-6">

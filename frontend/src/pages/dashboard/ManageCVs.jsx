@@ -1,0 +1,231 @@
+import React, { useState, useMemo } from 'react';
+import DashboardNavbar from '../../components/DashboardNavbar';
+
+const CVFilters = ({ onFilterChange }) => {
+  return (
+    <div className="grid grid-cols-3 gap-6">
+      <div>
+        <label className="block text-[#01295B] mb-2">Recruiter Name</label>
+        <input
+          type="text"
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
+          onChange={(e) => onFilterChange('recruiter', e.target.value)}
+          placeholder="Search by recruiter..."
+        />
+      </div>
+      <div>
+        <label className="block text-[#01295B] mb-2">Score</label>
+        <select
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
+          onChange={(e) => onFilterChange('score', e.target.value)}
+        >
+          <option value="">All Scores</option>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-[#01295B] mb-2">Status</label>
+        <select
+          className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#008B8B]"
+          onChange={(e) => onFilterChange('status', e.target.value)}
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="deleted">Deleted</option>
+        </select>
+      </div>
+    </div>
+  );
+};
+
+const ManageCVs = () => {
+  const [cvData, setCvData] = useState([
+    { id: 1, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter A', score: 'XYZ', status: 'active' },
+    { id: 2, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter B', score: 'XYZ', status: 'active' },
+    { id: 3, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter C', score: 'XYZ', status: 'active' },
+    { id: 4, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter D', score: 'XYZ', status: 'active' },
+    { id: 5, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter E', score: 'XYZ', status: 'active' },
+    { id: 6, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter F', score: 'XYZ', status: 'active' },
+    { id: 7, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter G', score: 'XYZ', status: 'active' },
+    { id: 8, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
+    { id: 9, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
+    { id: 10, fileName: 'cv_resume.pdf', uploadedBy: 'Recruiter', score: 'XYZ', status: 'active' },
+  ]);
+
+  const [filters, setFilters] = useState({
+    recruiter: '',
+    score: '',
+    status: ''
+  });
+
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc'
+  });
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
+
+  const handleSort = (key) => {
+    setSortConfig(prevSort => ({
+      key,
+      direction: 
+        prevSort.key === key && prevSort.direction === 'asc'
+          ? 'desc'
+          : 'asc'
+    }));
+  };
+
+  const SortIndicator = ({ column }) => {
+    if (sortConfig.key !== column) {
+      return <span className="ml-1 text-gray-400">↕</span>;
+    }
+    return <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>;
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      // TODO: Add API call to delete CV
+      // const response = await fetch(`/api/cvs/${id}`, {
+      //   method: 'DELETE',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     // Add any necessary authentication headers
+      //   }
+      // });
+      
+      // if (response.ok) {
+      //   setCvData(prevData => prevData.filter(cv => cv.id !== id));
+      // }
+
+      // For now, just update the UI
+      setCvData(prevData => prevData.filter(cv => cv.id !== id));
+    } catch (error) {
+      console.error('Error deleting CV:', error);
+      // Handle error (show notification, etc.)
+    }
+  };
+
+  const handleViewFeedback = (id) => {
+    // Implement feedback viewing logic
+    console.log('View feedback for CV:', id);
+  };
+
+  const filteredCVs = useMemo(() => {
+    let filtered = cvData.filter(cv => {
+      const recruiterMatch = cv.uploadedBy.toLowerCase().includes(filters.recruiter.toLowerCase()) || !filters.recruiter;
+      const scoreMatch = cv.score === filters.score || !filters.score;
+      const statusMatch = cv.status === filters.status || !filters.status;
+
+      return recruiterMatch && scoreMatch && statusMatch;
+    });
+
+    if (sortConfig.key) {
+      filtered.sort((a, b) => {
+        let aValue = a[sortConfig.key];
+        let bValue = b[sortConfig.key];
+
+        if (typeof aValue === 'string') {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
+        }
+
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return filtered;
+  }, [cvData, filters, sortConfig]);
+
+  const columns = [
+    { key: 'id', label: 'S.No.', sortable: true },
+    { key: 'fileName', label: 'CVs', sortable: true },
+    { key: 'uploadedBy', label: 'Uploaded By', sortable: true },
+    { key: 'score', label: 'Score', sortable: true },
+    { key: 'feedback', label: 'Generated Feedback', sortable: false },
+    { key: 'actions', label: '', sortable: false }
+  ];
+
+  return (
+    <div className="min-h-screen bg-[#001F3F]">
+      <DashboardNavbar />
+      
+      <div className="px-36 py-6">
+        <h1 className="text-4xl font-bold text-white mb-8">Manage CVs</h1>
+        
+        <div className="bg-gray-300/80 rounded-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-[#01295B] mb-4">Filters:</h2>
+            <CVFilters onFilterChange={handleFilterChange} />
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-400">
+                  {columns.map(column => (
+                    <th 
+                      key={column.key}
+                      className={`py-3 px-4 text-left text-[#008B8B] font-medium ${
+                        column.sortable ? 'cursor-pointer hover:text-[#006d6d]' : ''
+                      }`}
+                      onClick={() => column.sortable && handleSort(column.key)}
+                    >
+                      <div className="flex items-center">
+                        {column.label}
+                        {column.sortable && <SortIndicator column={column.key} />}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filteredCVs.map((cv, index) => (
+                  <tr 
+                    key={cv.id}
+                    className="border-b border-gray-300 hover:bg-gray-200/50 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-[#01295B]">{index + 1}</td>
+                    <td className="py-3 px-4">
+                      <a href="#" className="text-[#008B8B] hover:underline font-medium">
+                        {cv.fileName}
+                      </a>
+                    </td>
+                    <td className="py-3 px-4 text-[#01295B]">{cv.uploadedBy}</td>
+                    <td className="py-3 px-4 text-[#01295B]">{cv.score}</td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleViewFeedback(cv.id)}
+                        className="text-[#008B8B] hover:underline font-medium"
+                      >
+                        View Feedback
+                      </button>
+                    </td>
+                    <td className="py-3 px-4">
+                      <button
+                        onClick={() => handleDelete(cv.id)}
+                        className="px-4 py-1 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ManageCVs;
