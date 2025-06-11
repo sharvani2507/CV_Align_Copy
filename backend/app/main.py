@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import connect_to_mongo, close_mongo_connection
 from app.routers import company
+from .routes import auth
 import logging
 
 # --- Logging Configuration ---
@@ -45,6 +46,7 @@ app.add_middleware(
 
 # --- Routers ---
 app.include_router(company.router)
+app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
 
 # --- Root Endpoint ---
 @app.get("/")
