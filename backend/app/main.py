@@ -1,15 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import connect_to_mongo, close_mongo_connection
-from app.routers import company
-from .routes import auth
+from app.routes import company, auth, job_role, users, candidate
 import logging
 
 # --- Logging Configuration ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # --- App Initialization ---
 app = FastAPI(
@@ -22,31 +19,29 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     await connect_to_mongo()
+    logger.info("Application startup complete")
 
 @app.on_event("shutdown")
 async def shutdown():
     await close_mongo_connection()
+    logger.info("Application shutdown complete")
 
 # --- CORS Settings ---
-origins = [
-    "http://localhost:5173",  # for local Vite development server
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",  # for local React frontend
-    "http://127.0.0.1:3000",
-    # Add deployed frontend domains here
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],  # Add your frontend URLs
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 # --- Routers ---
-app.include_router(company.router)
+app.include_router(company.router, prefix="/company", tags=["Company"])
 app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
+app.include_router(job_role.router, prefix="/job-roles", tags=["Job Roles"])
+app.include_router(users.router)
+app.include_router(candidate.router, prefix="/candidates", tags=["Candidates"])
 
 # --- Root Endpoint ---
 @app.get("/")

@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import HiringManagerNavbar from '../../components/HiringManagerNavbar';
+import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CreateJobRole = () => {
   const navigate = useNavigate();
+  const { token } = useAuth();
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const [jobRole, setJobRole] = useState({
     title: '',
     description: '',
@@ -25,10 +30,39 @@ const CreateJobRole = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add API call to create job role
-    navigate('/hiring-manager/manage/job-roles');
+    setError('');
+    setLoading(true);
+
+    try {
+      // Convert skills string to array and format deadline
+      const formattedJobRole = {
+        ...jobRole,
+        skills: jobRole.skills.split(',').map(skill => skill.trim()),
+        deadline: new Date(jobRole.deadline).toISOString()
+      };
+
+      const response = await axios.post(
+        'http://localhost:8000/job-roles/',
+        formattedJobRole,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 201) {
+        navigate('/hiring-manager/manage/job-roles');
+      }
+    } catch (err) {
+      console.error('Error creating job role:', err.response?.data);
+      setError(err.response?.data?.detail || 'Failed to create job role');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,11 +70,17 @@ const CreateJobRole = () => {
       <HiringManagerNavbar />
       
       <div className="px-36 py-8">
-      <Link to="/hiring-manager/manage/job-roles" className="text-white hover:text-gray-300 transition">
-        <i className="fas fa-arrow-left text-2xl"></i>
-      </Link>
+        <Link to="/hiring-manager/manage/job-roles" className="text-white hover:text-gray-300 transition">
+          <i className="fas fa-arrow-left text-2xl"></i>
+        </Link>
 
         <h1 className="text-4xl font-bold text-white mb-8">CREATE NEW JOB ROLE</h1>
+
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
 
         <div className="bg-[#F4FFF9]/30 rounded-2xl p-12">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -132,7 +172,7 @@ const CreateJobRole = () => {
 
             <div>
               <label className="block text-[#A2E8DD] text-lg mb-2">
-                Skills Required
+                Skills Required (comma-separated)
               </label>
               <input
                 type="text"
@@ -140,6 +180,7 @@ const CreateJobRole = () => {
                 className="w-full bg-[#F4FFF9]/56 rounded-lg px-4 py-3 text-[#01295B] font-semibold placeholder-gray-300 focus:outline-none"
                 value={jobRole.skills}
                 onChange={handleInputChange}
+                placeholder="e.g. Python, JavaScript, React"
                 required
               />
             </div>
@@ -175,23 +216,25 @@ const CreateJobRole = () => {
 
             <div>
               <label className="block text-[#A2E8DD] text-lg mb-2">
-                Any specific requirements (optional)
+                Additional Requirements
               </label>
               <textarea
                 name="requirements"
                 rows={4}
-                className="w-full h-[100px] bg-[#F4FFF9]/56 rounded-lg px-4 py-3 text-[#01295B] font-semibold placeholder-gray-300 focus:outline-none resize-none"
+                className="w-full bg-[#F4FFF9]/56 rounded-lg px-4 py-3 text-[#01295B] font-semibold placeholder-gray-300 focus:outline-none resize-none"
                 value={jobRole.requirements}
                 onChange={handleInputChange}
+                placeholder="Any additional requirements or qualifications"
               />
             </div>
 
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="px-8 py-3 bg-[#A2E8DD] text-[#001F3F] rounded-lg font-medium text-lg hover:bg-[#8CD3C7] transition-colors"
+                disabled={loading}
+                className="bg-[#A2E8DD] text-[#01295B] px-8 py-3 rounded-lg font-semibold hover:bg-[#8CD3C7] transition disabled:opacity-50"
               >
-                Create Job Role
+                {loading ? 'Creating...' : 'Create Job Role'}
               </button>
             </div>
           </form>

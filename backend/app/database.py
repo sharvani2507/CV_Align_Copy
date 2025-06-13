@@ -1,6 +1,4 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import MongoClient
-from bson import ObjectId
 from typing import Optional
 import os
 from dotenv import load_dotenv
@@ -19,25 +17,30 @@ class Database:
     async def connect_db(cls):
         cls.client = AsyncIOMotorClient(MONGODB_URL)
         cls.db = cls.client[DATABASE_NAME]
+        
+        # Initialize collections and indexes
+        if "companies" not in await cls.db.list_collection_names():
+            await cls.db.create_collection("companies")
+            await cls.db.companies.create_index("website", unique=True)
+            logging.info("Initialized companies collection with indexes")
+        
+        # Initialize job_roles collection
+        if "job_roles" not in await cls.db.list_collection_names():
+            await cls.db.create_collection("job_roles")
+            await cls.db.job_roles.create_index([("company_id", 1), ("title", 1)], unique=True)
+            logging.info("Initialized job_roles collection with indexes")
+        
+        logging.info("Connected to MongoDB successfully")
 
     @classmethod
     async def close_db(cls):
         if cls.client:
-            cls.client.close()
+            await cls.client.close()
+            logging.info("Closed MongoDB connection")
 
     @classmethod
-    def get_db(cls):
-        return cls.db
-
-def get_collection(collection_name: str):
-    return Database.get_db()[collection_name]
-
-def convert_id(obj):
-    if isinstance(obj, dict):
-        if "_id" in obj:
-            obj["id"] = str(obj.pop("_id"))
-        return obj
-    return obj
+    def get_collection(cls, collection_name: str):
+        return cls.db[collection_name]
 
 db = Database()
 
@@ -47,18 +50,9 @@ async def get_database():
 async def connect_to_mongo():
     try:
         await Database.connect_db()
-        
-        # Initialize collections and indexes
-        if "companies" not in await db.db.list_collection_names():
-            await db.db.create_collection("companies")
-            await db.db.companies.create_index("website", unique=True)
-            logging.info("Initialized companies collection with indexes")
-        
-        logging.info("Connected to MongoDB successfully")
     except Exception as e:
         logging.error(f"Failed to connect to MongoDB: {str(e)}")
         raise e
 
 async def close_mongo_connection():
     await Database.close_db()
-    logging.info("Closed MongoDB connection")

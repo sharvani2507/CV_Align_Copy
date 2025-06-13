@@ -25,6 +25,7 @@ import ContactUs from './pages/ContactUs';
 import ThankYou from './pages/ThankYou';
 import UploadCV from './pages/recruiter_dashboard/UploadCV';
 import FinalListing from './pages/hiring_manager_dashboard/FinalListing';
+import JobRoleDetails from './pages/hiring_manager_dashboard/JobRoleDetails';
 
 function App() {
   return (
@@ -119,7 +120,7 @@ function App() {
               }
             />
             <Route
-              path="/recruiter/feedback/:candidateName"
+              path="/recruiter/feedback/:candidateId"
               element={
                 <ProtectedRoute allowedRoles={['recruiter']}>
                   <Feedback />
@@ -200,6 +201,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/hiring-manager/job-roles/:id" element={<JobRoleDetails />} />
           </Routes>
         </div>
       </Router>

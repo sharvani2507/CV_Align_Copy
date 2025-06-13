@@ -5,16 +5,16 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     if (token) {
       fetchUser(token);
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const fetchUser = async (token) => {
     try {
@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(response.data);
     } catch (error) {
+      console.error('Error fetching user:', error);
       localStorage.removeItem('token');
+      setToken(null);
     } finally {
       setLoading(false);
     }
@@ -38,6 +40,7 @@ export const AuthProvider = ({ children }) => {
     const { access_token, user } = response.data;
     
     localStorage.setItem('token', access_token);
+    setToken(access_token);
     setUser(user);
     return user;
   };
@@ -49,11 +52,13 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     setUser(null);
   };
 
   const value = {
     user,
+    token,
     loading,
     login,
     signup,

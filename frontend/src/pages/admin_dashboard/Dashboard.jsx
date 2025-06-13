@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import DashboardNavbar from '../../components/AdminNavbar';
+import { useAuth } from '../../contexts/AuthContext';
 
 function AdminDashboard() {
-  const [adminName] = useState('Admin Name');
+  const { user } = useAuth();
   
   // Mock data - replace with actual API data later
   const metrics = {
@@ -20,7 +21,7 @@ function AdminDashboard() {
       <main className="px-36 py-8">
         {/* Welcome Section */}
         <h1 className="text-4xl font-bold text-white mb-8">
-          Hello, {adminName}!
+          Hello, {user?.full_name || 'Admin'}!
         </h1>
 
         {/* Metrics Grid */}

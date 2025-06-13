@@ -3,7 +3,8 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from datetime import timedelta
 from typing import Optional
 from ..models.user import UserCreate, User, UserRole
-from ..database import get_collection, convert_id
+from ..database import Database
+from ..utils.mongo_utils import convert_id
 from ..auth.utils import (
     verify_password,
     get_password_hash,
@@ -17,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     payload = verify_token(token)
-    user = await get_collection("users").find_one({"email": payload["sub"]})
+    user = await Database.get_collection("users").find_one({"email": payload["sub"]})
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -28,7 +29,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
 @router.post("/signup")
 async def signup(user_data: UserCreate):
     # Check if user already exists
-    existing_user = await get_collection("users").find_one({"email": user_data.email})
+    existing_user = await Database.get_collection("users").find_one({"email": user_data.email})
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -36,7 +37,7 @@ async def signup(user_data: UserCreate):
         )
     
     # Verify company code
-    company = await get_collection("companies").find_one({"code": user_data.company_code})
+    company = await Database.get_collection("companies").find_one({"code": user_data.company_code})
     if not company:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -48,14 +49,14 @@ async def signup(user_data: UserCreate):
     user_dict["hashed_password"] = get_password_hash(user_dict.pop("password"))
     user_dict["is_active"] = True
     
-    result = await get_collection("users").insert_one(user_dict)
+    result = await Database.get_collection("users").insert_one(user_dict)
     user_dict["id"] = str(result.inserted_id)
     
     return {"message": "User created successfully", "user": User(**convert_id(user_dict))}
 
 @router.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await get_collection("users").find_one({"email": form_data.username})
+    user = await Database.get_collection("users").find_one({"email": form_data.username})
     if not user or not verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

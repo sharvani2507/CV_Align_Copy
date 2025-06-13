@@ -10,15 +10,22 @@ router = APIRouter(prefix="/company", tags=["Company"])
 @router.post("/register", response_model=CompanyResponse)
 async def register_company(company: CompanyCreate, db=Depends(get_database)):
     try:
+        logging.info(f"Attempting to register company: {company.model_dump()}")
+        
         # Check if company with this website already exists
         existing = await db.companies.find_one({"website": company.website})
         if existing:
-            raise HTTPException(status_code=400, detail="Company with this website already exists")
+            logging.warning(f"Company with website {company.website} already exists")
+            return {
+                "status": "error",
+                "message": f"A company with the website {company.website} is already registered. Please use a different website or contact support if this is your company."
+            }
 
         # Generate unique code
         code = generate_unique_code()
         while await db.companies.find_one({"code": code}):
             code = generate_unique_code()
+        logging.info(f"Generated unique code: {code}")
 
         # Create new company
         company_model = CompanyModel(
@@ -42,12 +49,23 @@ async def register_company(company: CompanyCreate, db=Depends(get_database)):
         logging.info(f"Retrieved company: {created_company}")
         
         if not created_company:
-            raise HTTPException(status_code=500, detail="Failed to retrieve created company")
+            logging.error("Failed to retrieve created company after insertion")
+            return {
+                "status": "error",
+                "message": "Failed to create company. Please try again or contact support."
+            }
         
         # Convert ObjectId to string for response
         created_company["id"] = str(created_company["_id"])
         
-        return CompanyResponse(**created_company)
+        return {
+            "status": "success",
+            "message": "Company registered successfully",
+            "data": CompanyResponse(**created_company)
+        }
     except Exception as e:
-        logging.error(f"Error in register_company: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logging.error(f"Error in register_company: {str(e)}", exc_info=True)
+        return {
+            "status": "error",
+            "message": "An unexpected error occurred. Please try again or contact support."
+        } 

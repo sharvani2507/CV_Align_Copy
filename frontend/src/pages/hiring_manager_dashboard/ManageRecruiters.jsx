@@ -1,39 +1,31 @@
-import React, { useState, useMemo } from 'react';
+import axios from 'axios';
+import { useAuth } from '../../contexts/AuthContext';
+import React, { useState, useMemo, useEffect } from 'react';
 import HiringManagerNavbar from '../../components/HiringManagerNavbar';
 
+
 const ManageRecruiters = () => {
-  const [recruiters, setRecruiters] = useState([
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah.j@company.com',
-      uploadedCVs: 25,
-      activeRoles: 4,
-      totalHires: 12,
-      status: 'Active',
-      joinedDate: '2023-01-15'
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      email: 'michael.c@company.com',
-      uploadedCVs: 18,
-      activeRoles: 3,
-      totalHires: 8,
-      status: 'Active',
-      joinedDate: '2023-03-22'
-    },
-    {
-      id: 3,
-      name: 'Emma Wilson',
-      email: 'emma.w@company.com',
-      uploadedCVs: 32,
-      activeRoles: 0,
-      totalHires: 15,
-      status: 'Inactive',
-      joinedDate: '2022-11-08'
-    }
-  ]);
+  const { token } = useAuth();
+  const [recruiters, setRecruiters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchRecruiters = async () => {
+      try {
+        const response = await axios.get('http://localhost:8000/recruiters/', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        setRecruiters(Array.isArray(response.data) ? response.data : []);
+      } catch (err) {
+        setError(err.response?.data?.detail || 'Failed to fetch recruiters');
+        setRecruiters([]); // Ensure recruiters is always an array
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRecruiters();
+  }, [token]);
 
   const [filters, setFilters] = useState({
     name: '',
@@ -77,8 +69,9 @@ const ManageRecruiters = () => {
   };
 
   const filteredAndSortedRecruiters = useMemo(() => {
+    if (!Array.isArray(recruiters)) return [];
     let result = recruiters.filter(recruiter => {
-      const nameMatch = recruiter.name.toLowerCase().includes(filters.name.toLowerCase()) || !filters.name;
+      const nameMatch = recruiter.full_name?.toLowerCase().includes(filters.name.toLowerCase()) || !filters.name;
       const statusMatch = filters.status === 'All Status' || recruiter.status === filters.status;
       return nameMatch && statusMatch;
     });
@@ -91,7 +84,6 @@ const ManageRecruiters = () => {
         return sorting.direction === 'asc' ? comparison : -comparison;
       });
     }
-
     return result;
   }, [recruiters, filters, sorting]);
 
@@ -153,7 +145,7 @@ const ManageRecruiters = () => {
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
                     onClick={() => handleSort('name')}
                   >
-                    Name <SortIndicator column="name" />
+                    Name <SortIndicator column="full_name" />
                   </th>
                   <th 
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
@@ -163,21 +155,21 @@ const ManageRecruiters = () => {
                   </th>
                   <th 
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
-                    onClick={() => handleSort('uploadedCVs')}
+                    onClick={() => handleSort('uploaded_cvs')}
                   >
-                    Uploaded CVs <SortIndicator column="uploadedCVs" />
+                    Uploaded CVs <SortIndicator column="uploaded_cvs" />
                   </th>
                   <th 
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
-                    onClick={() => handleSort('activeRoles')}
+                    onClick={() => handleSort('selected_candidates')}
                   >
-                    Active Roles <SortIndicator column="activeRoles" />
+                    Selected <SortIndicator column="selected_candidates'" />
                   </th>
                   <th 
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
-                    onClick={() => handleSort('totalHires')}
+                    onClick={() => handleSort('accuracy')}
                   >
-                    Total Hires <SortIndicator column="totalHires" />
+                    Accuracy <SortIndicator column="accuracy" />
                   </th>
                   <th 
                     className="py-3 px-4 text-left text-[#008B8B] font-medium cursor-pointer hover:text-[#006d6d]"
@@ -195,11 +187,11 @@ const ManageRecruiters = () => {
                     className="border-b border-gray-300 hover:bg-gray-200/50 transition-colors"
                   >
                     <td className="py-3 px-4 text-[#01295B]">{index + 1}</td>
-                    <td className="py-3 px-4 text-[#01295B] font-medium">{recruiter.name}</td>
+                    <td className="py-3 px-4 text-[#01295B] font-medium">{recruiter.full_name}</td>
                     <td className="py-3 px-4 text-[#01295B]">{recruiter.email}</td>
-                    <td className="py-3 px-4 text-[#01295B]">{recruiter.uploadedCVs}</td>
-                    <td className="py-3 px-4 text-[#01295B]">{recruiter.activeRoles}</td>
-                    <td className="py-3 px-4 text-[#01295B]">{recruiter.totalHires}</td>
+                    <td className="py-3 px-4 text-[#01295B]">{recruiter.uploaded_cvs}</td>
+                    <td className="py-3 px-4 text-[#01295B]">{recruiter.selected_candidates}</td>
+                    <td className="py-3 px-4 text-[#01295B]">{recruiter.accuracy}</td>
                     <td className="py-3 px-4">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                         recruiter.status === 'Active'
