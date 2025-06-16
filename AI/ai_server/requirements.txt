@@ -10,3 +10,4 @@ langchain_google_genai
 fastapi
 uvicorn
 langchain_groq
+python-multipart
